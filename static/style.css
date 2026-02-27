@@ -1,6 +1,9 @@
 *{
     margin: 0 px;
 }
+h1{
+    font-size: 2rem;
+}
 
 #main,cavnas{
     border: 2px solid black;

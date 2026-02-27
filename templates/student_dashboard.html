@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Welcome {{ student.name }}</h1>
+        <div>
+            <a href="/student/edit-profile" class="btn btn-sm btn-outline-secondary">edit profile</a> | 
+            <a href="/student/history" class="btn btn-sm btn-outline-secondary">History</a> | 
+            <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Organizations</h5>
+        </div>
+        <div class="card-body">
+            <table class="table align-middle">
+                <tbody>
+                    {% for company in approved_companies %}
+                    <tr>
+                        <td>{{ company.company_name }}</td>
+                        <td class="text-end">
+                            <a href="/company/{{ company.id }}/details" class="btn btn-primary btn-sm">view details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Applied Drives</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Sr No.</th>
+                        <th>Drive Name</th>
+                        <th>Company</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ app.drive.job_title }}</td>
+                        <td>{{ app.drive.company.company_name }}</td>
+                        <td>{{ app.application_date.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <a href="/drive/{{ app.drive_id }}/details" class="btn btn-primary btn-sm">View details</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">You haven't applied to any drives yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
