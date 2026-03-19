@@ -1,6 +1,6 @@
 
 from flask import current_app as app #current_app refers to the app.py that we have created 
-from flask import Flask, render_template,redirect,request,url_for,flash
+from flask import Flask, render_template,redirect,request,url_for,flash,session
 import os
 from .models import *
 
@@ -27,14 +27,19 @@ def login():
 
         user=User.query.filter_by(username=username).first()
         if user and user.password==password:
+            session['user_id'] = user.id
+            session['role'] = user.role
+            session['username'] = user.username
             #Blacklisted user
             if user.is_blacklisted:
+                session.clear()
                 flash("Your account has been deactivated by the Admin.", "danger")
                 return redirect(url_for('login'))
             
             if user.role == 'company':
                 #Company not approved
                 if not user.company.is_approved:
+                    session.clear()
                     flash("Your company account is still pending admin approval.", "warning")
                     return redirect(url_for('login'))
                 else:
@@ -133,4 +138,40 @@ def register_company():
 
         
 
-        
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("You have been logged out!",'info')
+    return redirect(url_for('login'))
+
+
+
+## DASHBOARDS
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    # Check
+    if session.get('role')!='admin':
+        flash('Unauthorized!','danger')
+        return redirect(url_for('login'))
+    
+    #Table data
+    pending_companies=Company.query.filter_by(is_approved=False).all()
+    all_students=Student.query.all()
+    all_companies=Company.query.all()
+    pending_drives=PlacementDrive.query.filter_by(status='Pending').all()
+
+    # Statistics
+    stats = {
+        'students': Student.query.count(),
+        'companies': Company.query.count(),
+        'drives': PlacementDrive.query.count(),
+        'applications': Application.query.count()
+    }
+    return render_template('admin_dashboard.html',
+                           stats=stats,
+                           pending_companies=pending_companies,
+                           all_students=all_students,
+                           all_companies=all_companies,
+                           pending_drives=pending_drives)
+

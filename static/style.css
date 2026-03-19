@@ -35,3 +35,11 @@ h1{
 #tabletext{
     color: rgb(123, 121, 121);
 }
+
+.flash-container {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;    
+}

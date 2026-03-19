@@ -1,13 +1,16 @@
-from flask import Flask
+from flask import Flask,session
 import os
-
+from dotenv import load_dotenv
 from application.database import db
+
+load_dotenv()
 
 app=None
 def create_app():
     app=Flask(__name__)
     app.debug=True
-    app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///placement.db'
+    app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///placement.sqlite3'
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     db.init_app(app)
     app.app_context().push()
     return app
@@ -21,7 +24,7 @@ if __name__=="__main__":
         Admin=User.query.filter_by(role="admin").first()
         if Admin is None:
             Admin=User(username=os.getenv('ADMIN_USERNAME'),
-                       mail=os.getenv('ADMIN_EMAIL'),
+                       email=os.getenv('ADMIN_EMAIL'),
                        password=os.getenv('ADMIN_PWD'),
                        role="admin")
             db.session.add(Admin)

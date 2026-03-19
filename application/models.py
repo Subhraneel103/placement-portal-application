@@ -82,4 +82,4 @@ class Application(db.Model):
     drive=db.relationship("PlacementDrive",back_populates="applications")
 
     # Table level constraints (since neither student id or drive id can be separately unique but they can together be unique)
-    __table_args__=(db.UniqueConstraint('student_id','drive_id',name='unique_application'))
+    __table_args__=(db.UniqueConstraint('student_id','drive_id',name='unique_application'),)
