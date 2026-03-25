@@ -10,3 +10,4 @@ Flask project with frontend using HTML CSS (Vanilla and Bootstrap) and database 
 - If we made the PK ID of Student the same as user id from user table, it would cause issues in the future when we change requirements or if we wish to delete records while still keeping historial data in Student table. So made them separate columns.
 
 - Security issues which I fixed by using a Flask secret key that will store flashed messages and login data in a session cookie on the user's browser...otherwise any tech savvy person may change their role to admin and do whatever they want. If i wish to use flash() functionality, using secret key is must
+- Created a base.html as a template html which will exist in all pages so as to not reinvent the wheel again and again

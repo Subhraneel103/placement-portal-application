@@ -1,29 +1,36 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Welcome {{ student.name }}</h1>
-        <div>
-            <a href="/student/edit-profile" class="btn btn-sm btn-outline-secondary">edit profile</a> | 
-            <a href="/student/history" class="btn btn-sm btn-outline-secondary">History</a> | 
-            <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
-        </div>
+        <h1>Welcome, {{ student.name }}!</h1>
+        <!-- <div>
+            <a href="{{ url_for('edit_profile') }}" class="btn btn-sm btn-outline-secondary">Edit Profile</a> | 
+            <a href="{{ url_for('application_history') }}" class="btn btn-sm btn-outline-secondary">History</a> | 
+            <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-danger">Logout</a>
+        </div> -->
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header bg-light">
-            <h5 class="mb-0">Organizations</h5>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Approved Organizations</h5>
         </div>
-        <div class="card-body">
-            <table class="table align-middle">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
                 <tbody>
                     {% for company in approved_companies %}
                     <tr>
-                        <td>{{ company.company_name }}</td>
-                        <td class="text-end">
-                            <a href="/company/{{ company.id }}/details" class="btn btn-primary btn-sm">view details</a>
+                        <td class="ps-3">
+                            <strong>{{ company.company_name }}</strong><br>
+                            <small class="text-muted">{{ company.website }}</small>
                         </td>
+                        <td class="text-end pe-3">
+                            <a href="{{ url_for('view_company', company_id=company.id) }}" class="btn btn-primary btn-sm">View Openings</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td class="text-center py-4 text-muted">No organizations are currently approved for recruitment.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -31,35 +38,41 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header bg-light">
-            <h5 class="mb-0">Applied Drives</h5>
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Your Applied Drives</h5>
         </div>
-        <div class="card-body">
-            <table class="table table-striped align-middle">
-                <thead>
+        <div class="card-body p-0">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-light">
                     <tr>
-                        <th>Sr No.</th>
-                        <th>Drive Name</th>
+                        <th class="ps-3">#</th>
+                        <th>Position</th>
                         <th>Company</th>
-                        <th>Date</th>
-                        <th>Action</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                        <th class="text-end pe-3">Details</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for app in applications %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td class="ps-3">{{ loop.index }}</td>
                         <td>{{ app.drive.job_title }}</td>
                         <td>{{ app.drive.company.company_name }}</td>
-                        <td>{{ app.application_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ app.application_date.strftime('%d %b, %Y') }}</td>
                         <td>
-                            <a href="/drive/{{ app.drive_id }}/details" class="btn btn-primary btn-sm">View details</a>
+                            <span class="badge {{ 'bg-success' if app.status == 'Accepted' else 'bg-info' if app.status == 'Applied' else 'bg-danger' }}">
+                                {{ app.status }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-3">
+                            <a href="{{ url_for('view_drive', drive_id=app.drive_id) }}" class="btn btn-outline-primary btn-sm">View</a>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="5" class="text-center text-muted">You haven't applied to any drives yet.</td>
+                        <td colspan="6" class="text-center py-4 text-muted">You haven't applied to any drives yet.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6">Welcome, {{ company.company_name }}</h1>
+            <p class="text-muted mb-0">Manage your recruitment drives and track applicants.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-dark text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-uppercase small">Active Placement Drives</h6>
+                    <h2 class="display-4">{{ drives|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-primary text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-uppercase small">Total Applications Received</h6>
+                    <h2 class="display-4">{{ total_applications }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4 d-grid">
+        <a href="{{ url_for('create_drive') }}" class="btn btn-success btn-lg shadow-sm">
+            + Post a New Placement Drive
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Your Placement Drives</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Job Title</th>
+                        <th>Posted Date</th>
+                        <th>Status</th>
+                        <th class="text-center">Applicants</th>
+                        <th class="text-end pe-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in drives %}
+                    <tr>
+                        <td class="ps-3">
+                            <strong>{{ drive.job_title }}</strong>
+                        </td>
+                        <td>{{ drive.created_at.strftime('%d %b, %Y') if drive.created_at else 'N/A' }}</td>
+                        <td>
+                            {% if drive.status == 'Approved' %}
+                                <span class="badge bg-success">Live</span>
+                            {% elif drive.status == 'Pending' %}
+                                <span class="badge bg-warning text-dark">Awaiting Approval</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ drive.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <span class="badge rounded-pill bg-primary">
+                                {{ drive.applications|length }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-3">
+                            <a href="{{ url_for('view_applicants', drive_id=drive.id) }}" class="btn btn-sm btn-outline-primary">
+                                View Applicants
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <p class="mb-2">You haven't posted any drives yet.</p>
+                            <a href="{{ url_for('create_drive') }}" class="btn btn-sm btn-primary">Create Your First Drive</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -171,7 +171,133 @@ def admin_dashboard():
     return render_template('admin_dashboard.html',
                            stats=stats,
                            pending_companies=pending_companies,
-                           all_students=all_students,
+                           students=all_students,
                            all_companies=all_companies,
                            pending_drives=pending_drives)
 
+
+
+@app.route('/admin/approve_company/<int:company_id>',methods=['POST'])
+def approve_company(company_id):
+    # Security Check: Only Admins allowed
+    if session.get('role')!='admin':
+        flash('Unauthorized!','danger')
+        return redirect(url_for('login'))
+    
+    # Find the company or return 404 error if not found
+    company=Company.query.get_or_404(company_id)
+
+    # Update the status
+    company.is_approved=True
+    db.session.commit()
+
+    # Feedback and Redirect
+    flash(f'Company "{company.company_name}" approved!','success')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/toggle_blacklist/<int:user_id>',methods=['POST'])
+def toggle_blacklist(user_id):
+    # Check if admin
+    if session.get('role') != 'admin':
+        flash('Unauthorized action!', 'danger')
+        return redirect(url_for('login'))
+    
+    user=User.query.get_or_404(user_id)
+
+    # Safety lock so admin can't blacklist themselves
+    if user.id==session.get('user_id'):
+        flash('You cannot blacklist yourself!', 'danger')
+        return redirect(url_for('admin_dashboard'))
+    
+    user.is_blacklisted=not user.is_blacklisted
+    db.session.commit()
+
+    status='blacklisted' if user.is_blacklisted else 'activated'
+    flash(f'User {user.username} has been {status}!', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/approve_drive/<int:drive_id>',methods=['POST'])
+def approve_drive(drive_id):
+    if session.get('role')=='admin':
+        return redirect(url_for('login'))
+    
+    drive=PlacementDrive.query.get_or_404(drive_id)
+    drive.status='Approved'
+    db.session.commit()
+
+    flash(f'Drive "{drive.job_title}" approved!','success')
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/student/dashboard')
+def student_dashboard():
+    # Check role
+    if session.get('role')!='student':
+        flash("Please login as a student","danger")
+        return redirect(url_for('login'))
+    
+    #Fetching specific student record based on ID
+    student=Student.query.filter_by(user_id=session['user_id']).first()
+
+    if not student:
+        flash("Student profile not found. Please contact admin.","warning")
+        return redirect(url_for('login'))
+    
+    # Fetch approved companies
+    approved_companies=Company.query.filter_by(is_approved=True).all()
+
+    # fetch application
+    applications= student.applications
+
+    return render_template('student_dashboard.html',student=student,approved_companies=approved_companies,applications=applications)
+
+
+@app.route('/student/edit-profile',methods=['GET','POST'])
+def edit_profile():
+    # Placeholder for now
+    return "Edit Profile Page (Coming Soon)"
+
+@app.route('/student/history')
+def application_history():
+    # Placeholder for now
+    return "Application History Page (Coming Soon)"
+
+@app.route('/company/<int:company_id>/details')
+def view_company(company_id):
+    # This matches the 'View Openings' link
+    return f"Details for Company ID: {company_id} (Coming Soon)"
+
+@app.route('/drive/<int:drive_id>/details')
+def view_drive(drive_id):
+    # This matches the 'View' link in Applied Drives
+    return f"Details for Drive ID: {drive_id} (Coming Soon)"
+
+
+@app.route('/company/dashboard')
+def company_dashboard():
+    # Check role
+    if session.get('role')!='company':
+        flash('Please login as a company','danger')
+        return redirect(url_for('login'))
+    
+    company=Company.query.filter_by(user_id=session['user_id']).first()
+    drives=PlacementDrive.query.filter_by(company_id=company.id).all()
+
+    #count total applications across all company drives
+    total_applications=sum(len(drive.applications) for drive in drives)
+
+    return render_template('company_dashboard.html',company=company,drives=drives,total_applications=total_applications)
+
+
+
+# controllers.py
+
+@app.route('/company/create-drive', methods=['GET', 'POST'])
+def create_drive():
+    # Placeholder for the form to create a new placement drive
+    return "Create Placement Drive Page (Coming Soon)"
+
+@app.route('/company/drive/<int:drive_id>/applicants')
+def view_applicants(drive_id):
+    # Placeholder to see students who applied to a specific drive
+    return f"List of Applicants for Drive ID: {drive_id} (Coming Soon)"
