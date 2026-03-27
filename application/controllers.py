@@ -254,8 +254,30 @@ def student_dashboard():
 
 @app.route('/student/edit-profile',methods=['GET','POST'])
 def edit_profile():
-    # Placeholder for now
-    return "Edit Profile Page (Coming Soon)"
+    if session.get('role')!='student':
+        flash('Please login as a student','danger')
+        return redirect(url_for('login'))
+    student=Student.query.filter_by(user_id=session['user_id']).first()
+    if request.method=="POST":
+        # Update text fields
+        student.name=request.form.get('fullname')
+        student.college=request.form.get('college')
+        student.branch=request.form.get('branch')
+        student.semester=request.form.get('semester')
+        student.cgpa=request.form.get('cgpa')
+
+        #resume update
+        file=request.files.get('resume')
+        if file and allowed_file(file.filename):
+            file_path=os.path.join(Upload_Folder,file.filename)
+            file.save(file_path)
+            student.resume_path=file_path
+        
+        db.session.commit()
+        flash("Profile updated successfully","success")
+        return redirect(url_for('student_dashboard'))
+    
+    return render_template('edit_profile_student.html',student=student)
 
 @app.route('/student/history')
 def application_history():
@@ -301,3 +323,22 @@ def create_drive():
 def view_applicants(drive_id):
     # Placeholder to see students who applied to a specific drive
     return f"List of Applicants for Drive ID: {drive_id} (Coming Soon)"
+
+@app.route('/company/edit-profile',methods=['GET','POST'])
+def edit_company_profile():
+    if session.get('role')!='company':
+        flash('Please login as the company HR','danger')
+        return redirect(url_for('login'))
+    company=Company.query.filter_by(user_id=session['user_id']).first()
+    if request.method=="POST":
+        # Update text fields
+        company.company_name=request.form.get('company_name')
+        company.website=request.form.get('website')
+        company.hr_name=request.form.get('hr_name')
+        company.hr_contact=request.form.get('hr_contact')
+        
+        db.session.commit()
+        flash("Company profile updated successfully","success")
+        return redirect(url_for('company_dashboard'))
+    
+    return render_template('edit_profile_company.html',company=company)
