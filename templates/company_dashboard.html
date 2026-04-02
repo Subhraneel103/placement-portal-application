@@ -16,15 +16,20 @@
         <div class="col-md-6">
             <div class="card bg-dark text-white shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h6 class="text-uppercase small">Active Placement Drives</h6>
-                    <h2 class="display-4">{{ drives|length }}</h2>
+                    <h6 class="text-uppercase small">Live Placement Drives</h6>
+                    <h2 class="display-4">{{ active_count }}</h2>
+                    {% if pending_count > 0 %}
+                        <p class="mb-0 text-warning small">
+                            + {{ pending_count}} drive(s) awaiting approval
+                        </p>
+                    {% endif %}
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card bg-primary text-white shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h6 class="text-uppercase small">Total Applications Received</h6>
+                    <h6 class="text-uppercase small">Total Applications</h6>
                     <h2 class="display-4">{{ total_applications }}</h2>
                 </div>
             </div>

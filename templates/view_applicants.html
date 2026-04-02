@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3>Applicants for: {{ drive.job_title }}</h3>
+            <p class="text-muted">Review student profiles and update their recruitment status.</p>
+        </div>
+        <a href="{{ url_for('company_dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-3">Student Name</th>
+                        <th>Branch</th>
+                        <th>CGPA</th>
+                        <th>Resume</th>
+                        <th>Current Status</th>
+                        <th class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applicants %}
+                    <tr>
+                        <td class="ps-3">
+                            <strong>{{ app.student.name }}</strong>
+                        </td>
+                        <td>{{ app.student.branch }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ app.student.cgpa }}</span></td>
+                        <td>
+                            {% if app.student.resume_path %}
+                                <a href="{{ url_for('static', filename='uploads/resumes/' + app.student.resume_path.split('/')[-1]) }}" class="btn btn-sm btn-link" target="_blank">View Resume</a>
+                            {% else %}
+                                <span class="text-muted small">No Resume</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge {{ 'bg-success' if app.status == 'Shortlisted' else 'bg-danger' if app.status == 'Rejected' else 'bg-primary' }}">
+                                {{ app.status }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-3">
+                            <form action="" method="POST" style="display:inline;">
+                                <input type="hidden" name="application_id" value="{{ app.id }}">
+                                <input type="hidden" name="status" value="Shortlisted">
+                                <button type="submit" class="btn btn-sm btn-success" {% if app.status == 'Shortlisted' %}disabled{% endif %}>Shortlist</button>
+                            </form>
+
+                            <form action="" method="POST" style="display:inline;">
+                                <input type="hidden" name="application_id" value="{{ app.id }}">
+                                <input type="hidden" name="status" value="Rejected">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" {% if app.status == 'Rejected' %}disabled{% endif %}>Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">No students have applied to this drive yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -62,7 +62,7 @@ class PlacementDrive(db.Model):
     status=db.Column(db.String(30),default='Pending') #Pending, Approved, Denied or Closed. Will be done by Admin
     allowed_branches=db.Column(db.Text(),nullable=False)
     allowed_years=db.Column(db.Text(),nullable=False)
-
+    created_at=db.Column(db.DateTime(),default=datetime.now)
 
     #relationships
     company=db.relationship("Company",back_populates="drives") #Child side

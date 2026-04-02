@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white py-3">
+                <h4 class="mb-0">Post New Placement Drive</h4>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('create_drive') }}" method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Job Title</label>
+                            <input type="text" name="job_title" class="form-control" placeholder="e.g. Junior Web Developer" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Job Location</label>
+                            <input type="text" name="job_location" class="form-control" placeholder="e.g. Remote / Kolkata" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Minimum CGPA</label>
+                            <input type="number" step="0.01" name="eligibility_CGPA" class="form-control" placeholder="e.g. 8.25" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Allowed Branches</label>
+                            <input type="text" name="allowed_branches" class="form-control" placeholder="e.g. IT, CSE, ECE" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Allowed Years</label>
+                            <input type="text" name="allowed_years" class="form-control" placeholder="e.g. 2025, 2026" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Application Deadline</label>
+                        <input type="date" name="deadline" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Job Description</label>
+                        <textarea name="job_description" class="form-control" rows="4" placeholder="Mention roles, responsibilities, tech stack, salary etc" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Other Eligibility Criteria</label>
+                        <textarea name="eligibility_criteria_others" class="form-control" rows="2" placeholder="e.g. No active backlogs, must have personal laptop, internships or experience etc"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a href="{{ url_for('company_dashboard') }}" class="btn btn-link text-muted">Cancel</a>
+                        <button type="submit" class="btn btn-success px-5">Submit Drive for Approval</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

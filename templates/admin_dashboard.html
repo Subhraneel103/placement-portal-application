@@ -48,6 +48,7 @@
                         <thead>
                             <tr>
                                 <th class="ps-3">Company Name</th>
+                                <th>HR Name</th>
                                 <th class="text-end pe-3">Action</th>
                             </tr>
                         </thead>
@@ -55,10 +56,19 @@
                             {% for company in pending_companies %}
                             <tr>
                                 <td class="ps-3">{{ company.company_name }}</td>
+                                <td>{{ company.hr_name }}</td>
                                 <td class="text-end pe-3">
-                                    <form action="{{ url_for('approve_company', id=company.id) }}" method="POST">
-                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                                    </form>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ url_for('review_company',company_id=company.id) }}" class="btn btn-sm btn-outline-primary">Review</a>
+                                        
+                                        <form action="{{ url_for('approve_company', company_id=company.id) }}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                        </form>
+
+                                        <form action="{{ url_for('reject_company',company_id=company.id) }}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% else %}
@@ -90,6 +100,11 @@
                                 <td class="text-end pe-3">
                                     <form action="{{ url_for('approve_drive', drive_id=drive.id) }}" method="POST">
                                         <button type="submit" class="btn btn-sm btn-success">Verify & Post</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="{{ url_for('reject_drive', drive_id=drive.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
                                     </form>
                                 </td>
                             </tr>
