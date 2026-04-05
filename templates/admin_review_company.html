@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Reviewing: {{ company.company_name }}</h4>
+            <a href="{{ url_for('admin_approvals') }}" class="btn btn-sm btn-light">Back to List</a>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="fw-bold text-muted small uppercase">Company Website</label>
+                    <p><a href="{{ company.website }}" target="_blank">{{ company.website }}</a></p>
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold text-muted small uppercase">HR Contact</label>
+                    <p>{{ company.hr_name }}<br>{{ company.hr_contact }}</p>
+                </div>
+                <div class="alert alert-warning border-0">
+                    <strong>Admin Notice:</strong>Approving this company will allow them to post recruitment drives and view student profiles.
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <form action="{{ url_for('approve_company',company_id=company.id) }}" method="POST">
+                        <button type="submit" class="btn btn-success px-5">Verify & Approve Company</button>
+                    </form>
+                    <form action="{{ url_for('reject_company',company_id=company.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger px-4">Reject Registration</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

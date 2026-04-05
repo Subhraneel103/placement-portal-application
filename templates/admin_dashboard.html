@@ -98,6 +98,7 @@
                                 <td class="ps-3">{{ drive.job_title }}</td>
                                 <td class="ps-3">{{ drive.company.company_name }}</td>
                                 <td class="text-end pe-3">
+                                    
                                     <form action="{{ url_for('approve_drive', drive_id=drive.id) }}" method="POST">
                                         <button type="submit" class="btn btn-sm btn-success">Verify & Post</button>
                                     </form>
@@ -142,12 +143,18 @@
                                 {{ 'Blacklisted' if student.user.is_blacklisted else 'Active' }}
                             </span>
                         </td>
+                        
                         <td class="text-end pe-3">
-                            <form action="{{ url_for('toggle_blacklist', user_id=student.user_id) }}" method="POST">
-                                <button type="submit" class="btn btn-sm {{ 'btn-outline-success' if student.user.is_blacklisted else 'btn-outline-danger' }}">
-                                    {{ 'Activate' if student.user.is_blacklisted else 'Blacklist' }}
-                                </button>
-                            </form>
+                            <div class="d-flex justify-content-end gap-2 align-items-center">
+                                <form action="{{ url_for('toggle_blacklist', user_id=student.user_id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm {{ 'btn-outline-warning' if student.user.is_blacklisted else 'btn-outline-danger' }}">
+                                        {{ 'Activate' if student.user.is_blacklisted else 'Blacklist' }}
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('delete_user', user_id=student.user_id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">Delete Student</button>
+                                </form>
+                            </div> 
                         </td>
                     </tr>
                     {% endfor %}
@@ -185,11 +192,16 @@
                             </span>
                         </td>
                         <td class="text-end pe-3">
-                            <form action="{{ url_for('toggle_blacklist', user_id=company.user_id) }}" method="POST">
-                                <button type="submit" class="btn btn-sm {{ 'btn-outline-success' if company.user.is_blacklisted else 'btn-outline-danger' }}">
-                                    {{ 'Activate' if company.user.is_blacklisted else 'Blacklist' }}
-                                </button>
-                            </form>
+                            <div class="d-flex justify-content-end gap-2 align-items-center">
+                                <form action="{{ url_for('toggle_blacklist', user_id=company.user_id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm {{ 'btn-outline-warning' if company.user.is_blacklisted else 'btn-outline-danger' }}">
+                                        {{ 'Activate' if company.user.is_blacklisted else 'Blacklist' }}
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('delete_user', user_id=company.user_id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">Delete Company</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}

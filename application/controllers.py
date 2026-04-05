@@ -19,6 +19,23 @@ def allowed_file(filename):
         return False
 
 
+### HOMEPAGE INDEX
+@app.route('/')
+def index():
+    stats={
+        'active_drives':PlacementDrive.query.filter_by(status='Approved').count(),
+        'companies':Company.query.count(),
+        'students':Student.query.count(),
+        'applications':Application.query.count()
+    }
+
+    featured_drives=PlacementDrive.query.filter_by(status='Approved').order_by(PlacementDrive.created_at.desc()).limit(3).all()
+    return render_template('index.html',stats=stats,featured_drives=featured_drives)
+
+
+
+#### REGISTRATIONS AND LOGINS
+
 @app.route('/login',methods=['GET','POST'])
 def login():
     if request.method=="POST":
@@ -148,6 +165,7 @@ def logout():
 
 ## DASHBOARDS
 
+#ADMIN DASH
 @app.route('/admin/dashboard')
 def admin_dashboard():
     # Check
@@ -160,6 +178,7 @@ def admin_dashboard():
     all_students=Student.query.all()
     all_companies=Company.query.all()
     pending_drives=PlacementDrive.query.filter_by(status='Pending').all()
+    
 
     # Statistics
     stats = {
@@ -177,6 +196,53 @@ def admin_dashboard():
 
 
 
+## STUDENT DASH
+@app.route('/student/dashboard')
+def student_dashboard():
+    # Check role
+    if session.get('role')!='student':
+        flash("Please login as a student","danger")
+        return redirect(url_for('login'))
+    
+    #Fetching specific student record based on ID
+    student=Student.query.filter_by(user_id=session['user_id']).first()
+
+    if not student:
+        flash("Student profile not found. Please contact admin.","warning")
+        return redirect(url_for('login'))
+    
+    # Fetch approved companies
+    approved_companies=Company.query.filter_by(is_approved=True).all()
+
+    # fetch application
+    applications= student.applications
+
+    return render_template('student_dashboard.html',student=student,approved_companies=approved_companies,applications=applications)
+
+
+
+## COMPANY DASH
+@app.route('/company/dashboard')
+def company_dashboard():
+    # Check role
+    if session.get('role')!='company':
+        flash('Please login as a company','danger')
+        return redirect(url_for('login'))
+    
+    company=Company.query.filter_by(user_id=session['user_id']).first()
+    drives=PlacementDrive.query.filter_by(company_id=company.id).all()
+    active_drive=PlacementDrive.query.filter_by(company_id=company.id,status='Approved').count()
+    pending_drive=PlacementDrive.query.filter_by(company_id=company.id,status='Pending').count()
+    #count total applications across all company drives
+    total_applications=sum(len(drive.applications) for drive in drives)
+
+    return render_template('company_dashboard.html',company=company,drives=drives,active_count=active_drive,pending_count=pending_drive,total_applications=total_applications)
+
+
+
+## ADMIN METHODSS
+
+#APPROVE COMP
 @app.route('/admin/approve_company/<int:company_id>',methods=['POST'])
 def approve_company(company_id):
     # Security Check: Only Admins allowed
@@ -195,6 +261,7 @@ def approve_company(company_id):
     flash(f'Company "{company.company_name}" approved!','success')
     return redirect(url_for('admin_dashboard'))
 
+## REJECT COMP
 @app.route('/admin/reject_company/<int:company_id>',methods=['POST'])
 def reject_company(company_id):
     if session.get('role')!='admin':
@@ -211,6 +278,7 @@ def reject_company(company_id):
 
     return redirect(url_for('admin_approvals'))
 
+## REVIEW COMP
 @app.route('/admin/review_company/<int:company_id>',methods=['POST','GET'])
 def review_company(company_id):
     if session.get('role')!='admin':
@@ -221,7 +289,7 @@ def review_company(company_id):
     return render_template('admin_review_company.html',company=company)
 
 
-
+### USER BLACKLISTING
 @app.route('/admin/toggle_blacklist/<int:user_id>',methods=['POST'])
 def toggle_blacklist(user_id):
     # Check if admin
@@ -243,6 +311,30 @@ def toggle_blacklist(user_id):
     flash(f'User {user.username} has been {status}!', 'success')
     return redirect(url_for('admin_dashboard'))
 
+
+## USER DELETION
+@app.route('/admin/delete_user/<int:user_id>',methods=['POST'])
+def delete_user(user_id):
+    if session.get('role')!='admin':
+        flash("Unauthorized! Only admins allowed",'danger')
+        return redirect(url_for('login'))
+    user=User.query.get_or_404(user_id)
+    
+    # Logic to prevent Admin self deletion
+    if user.id==session.get('user_id'):
+        flash('You cannot delete yourself!','danger')
+        return redirect(url_for('admin_dashboard'))
+    
+    username=user.username
+    db.session.delete(user)
+    db.session.commit()
+
+    flash(f"Account for {username} has been deleted successfully",'success')
+    return redirect(url_for('admin_dashboard'))
+
+    
+
+## DRIVE APPROVAL
 @app.route('/admin/approve_drive/<int:drive_id>',methods=['POST'])
 def approve_drive(drive_id):
     if session.get('role')!='admin':
@@ -268,28 +360,6 @@ def reject_drive(drive_id):
 
     flash(f'Drive "{drive.job_title}" rejected.','success')
     return redirect(url_for('admin_dashboard'))
-
-@app.route('/student/dashboard')
-def student_dashboard():
-    # Check role
-    if session.get('role')!='student':
-        flash("Please login as a student","danger")
-        return redirect(url_for('login'))
-    
-    #Fetching specific student record based on ID
-    student=Student.query.filter_by(user_id=session['user_id']).first()
-
-    if not student:
-        flash("Student profile not found. Please contact admin.","warning")
-        return redirect(url_for('login'))
-    
-    # Fetch approved companies
-    approved_companies=Company.query.filter_by(is_approved=True).all()
-
-    # fetch application
-    applications= student.applications
-
-    return render_template('student_dashboard.html',student=student,approved_companies=approved_companies,applications=applications)
 
 
 @app.route('/student/edit-profile',methods=['GET','POST'])
@@ -388,22 +458,6 @@ def view_company(company_id):
 
 
 
-
-@app.route('/company/dashboard')
-def company_dashboard():
-    # Check role
-    if session.get('role')!='company':
-        flash('Please login as a company','danger')
-        return redirect(url_for('login'))
-    
-    company=Company.query.filter_by(user_id=session['user_id']).first()
-    drives=PlacementDrive.query.filter_by(company_id=company.id).all()
-    active_drive=PlacementDrive.query.filter_by(company_id=company.id,status='Approved').count()
-    pending_drive=PlacementDrive.query.filter_by(company_id=company.id,status='Pending').count()
-    #count total applications across all company drives
-    total_applications=sum(len(drive.applications) for drive in drives)
-
-    return render_template('company_dashboard.html',company=company,drives=drives,active_count=active_drive,pending_count=pending_drive,total_applications=total_applications)
 
 
 
