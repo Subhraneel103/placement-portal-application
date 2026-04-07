@@ -2,5 +2,81 @@
 
 {% block content %}
 <div class="bg-dark text-white py-5 mb-5">
-    <div class="container"
+    <div class="container py-5 text-center">
+        <h1 class="display-3 fw-bold mb-3">Your Career Starts Here!!</h1>
+        <p class="lead mb-4 fs-4 text-light">The Handshake between talent and industry</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('register_student') }}" class="btn btn-primary btn-lg px-5">Get Started</a>
+            <a href="#about" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+        </div>
+    </div>
 </div>
+
+<div class="container">
+    <div class="row text-center mb-5 mt-n5">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 py-3" style="background-color: rgb(244, 226, 114);">
+                <h3 class="text-primary fw-bold">{{ stats.active_drives }}</h3>
+                <p class="text-muted mb-0 fw-bold">Active Drives</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 py-3" style="background-color: rgb(223, 136, 235);">
+                <h3 class="text-success fw-bold">{{ stats.companies }}</h3>
+                <p class="text-muted mb-0 fw-bold">Partner Companies</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 py-3" style="background-color: rgb(241, 120, 120);">
+                <h3 class="text-info fw-bold">{{ stats.students }}</h3>
+                <p class="text-muted mb-0 fw-bold">Registered Students</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <h3 class="mb-4">Recently Added Opportunities</h3>
+        <div class="row g-4">
+            {% for drive in featured_drives %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 border-top border-primary border-4">
+                    <div class="card-body">
+                        <span class="badge bg-light text-dark mb-2 border">{{ drive.job_location }}</span>
+                        <h5 class="card-title fw-bold">{{ drive.job_title }}</h5>
+                        <p class="text-muted small mb-3">{{ drive.company.company_name }}</p>
+                        <p class="card-text text-truncate" style="max-width: 100%;">
+                            Min CGPA: <strong>{{ drive.eligibility_CGPA }}</strong>
+                        </p>
+                        <a href="{{ url_for('view_drive', drive_id=drive.id) }}" class="btn btn-sm btn-outline-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>New opportunities are added every day...Stay tuned</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <div id="about" class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="p-5 bg-light border rounded-3 h-100">
+                <h2>For Students</h2>
+                <p>Build your profile, upload your resume, and apply to multiple placement drives with a single click. Track your application status in real-time.</p>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-dark">Browse Jobs</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-5 text-white bg-dark rounded-3 h-100">
+                <h2>For Companies</h2>
+                <p>Post recruitment drives, manage applicant pipelines, and find the perfect candidates. Access student resumes and shortlist efficiently.</p>
+                <a href="{{ url_for('register_company') }}" class="btn btn-outline-light">Hire Talent</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

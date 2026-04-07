@@ -1,46 +1,49 @@
-   {% extends 'base.html' %}
+{% extends 'base.html' %}
 
-    {% block content %}
-    <style>
-        #form-body{
-            height:auto;
-            margin-top: 240px;
+{% block title %}Login | Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5 col-lg-4">
             
-        }
-    </style>
-    <div id="main">
-        <div class="flash-container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="card shadow-sm border-0 mt-5">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h4 class="mb-0 fw-bold">User Login</h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form action="{{ url_for('login') }}" method="POST">
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-bold">Username</label>
+                            <input type="text" class="form-control" id="name" name="username" 
+                                   placeholder="Enter username" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="••••••••" required>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary fw-bold">Login</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="small text-muted mb-2">New to the portal?</p>
+                    <div class="d-flex justify-content-center gap-3 small">
+                        <a href="{{ url_for('register_student') }}" class="text-decoration-none fw-bold">Student Signup</a>
+                        <span class="text-muted">|</span>
+                        <a href="{{ url_for('register_company') }}" class="text-decoration-none fw-bold text-success">Company Signup</a>
                     </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        </div>
-        <div id="canvas">
-            <div id="form-body">
-                <h1>Login Form</h1>
-                <form action="/login" method="post">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="name" name="username">
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password">
-                </div>
-                <div class="text-center">
-                <input type="submit" class="btn btn-primary" value="Login"><br>
-                If you are new,<br> 
-                <a href="{{ url_for('register_student') }}">Register (Student)</a>
-                <a href="{{ url_for('register_company') }}">Register (Company)</a>
-                </div>
-                </form>
             </div>
+
         </div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}

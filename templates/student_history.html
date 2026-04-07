@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}My Application History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+            <h4 class="mb-0">My Placement History</h4>
+            <a href="{{ url_for('student_dashboard') }}" class="btn btn-sm btn-light">View More Jobs</a>
+        </div>
+        
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Company</th>
+                        <th>Job Role</th>
+                        <th>Eligibility Required</th>
+                        <th class="text-center">Current Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="ps-4">
+                            <span class="fw-bold text-primary">{{ app.drive.company.company_name }}</span>
+                        </td>
+                        <td>
+                            <div>{{ app.drive.job_title }}</div>
+                            <small class="text-muted">{{ app.drive.job_location }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ app.drive.eligibility_CGPA }} CGPA</span>
+                        </td>
+                        <td class="text-center">
+                            {% if app.status == 'Shortlisted' or app.status == 'Selected' %}
+                                <span class="badge bg-success px-3">Selected</span>
+                            {% elif app.status == 'Rejected' %}
+                                <span class="badge bg-danger px-3">Not Selected</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark px-3">Application Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <p class="mb-0">You haven't applied to any placement drives yet.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

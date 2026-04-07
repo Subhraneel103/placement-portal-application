@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Placement Records & History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-dark text-white border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <h6 class="text-uppercase small mb-2 opacity-75">Total Students Placed</h6>
+                    <h2 class="display-5 fw-bold">{{ placed_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <h6 class="text-uppercase small mb-2 opacity-75">Placement Success Rate</h6>
+                    <h2 class="display-5 fw-bold">{{ rate }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-end d-flex align-items-center justify-content-end">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0">Drive Archive</h5>
+            <form action="{{ url_for('admin_history') }}" method="GET" class="d-flex gap-2">
+                <input type="text" name="q" class="form-control form-control-sm" placeholder="Search past jobs..." value="{{ q }}">
+                <button type="submit" class="btn btn-sm btn-light">Search</button>
+                {% if q %}<a href="{{ url_for('admin_history') }}" class="btn btn-sm btn-dark">Reset</a>{% endif %}
+            </form>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Drive Title</th>
+                        <th>Company</th>
+                        <th>Applicants</th>
+                        <th>Final Status</th>
+                        <th class="text-end pe-4">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in drives %}
+                    <tr>
+                        <td class="ps-4"><strong>{{ drive.job_title }}</strong></td>
+                        <td>{{ drive.company.company_name }}</td>
+                        <td><span class="badge rounded-pill bg-info text-dark">{{ drive.applications|length }}</span></td>
+                        <td>
+                            {% if drive.status == 'Approved' %}
+                                <span class="badge bg-success">Live</span>
+                            {% elif drive.status == 'Stopped' %}
+                                <span class="badge bg-secondary">Archived</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">{{ drive.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('admin_review_drive', drive_id=drive.id) }}" class="btn btn-sm btn-link">View Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-success fw-bold">Entire Placements Ledger</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-success">
+                    <tr>
+                        <th class="ps-4">Student ID</th>
+                        <th>Student Name</th>
+                        <th>Hired By</th>
+                        <th>Role</th>
+                        <th class="text-end pe-4">Hiring ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in placements %}
+                    <tr>
+                        <td class="ps-4">#{{ app.student.id }}</td>
+                        <td class="fw-bold">{{ app.student.name }}</td>
+                        <td>{{ app.drive.company.company_name }}</td>
+                        <td>{{ app.drive.job_title }}</td>
+                        <td class="text-end pe-4 text-muted small">{{ app.id }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center py-5 text-muted">No placement records found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

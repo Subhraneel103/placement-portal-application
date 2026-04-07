@@ -5,7 +5,11 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="display-6">Welcome, {{ company.company_name }}</h1>
-            <p class="text-muted mb-0">Manage your recruitment drives and track applicants.</p>
+            <p class="text-muted mb-0">
+                <strong>HR Manager:</strong> {{ company.hr_name }} | 
+                <strong>Official Email:</strong> {{ company.user.email }} |
+                <a href="{{ company.website }}" target="_blank" class="text-decoration-none small">Company Website ↗</a>
+            </p>
         </div>
         <!-- <div>
             <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
@@ -69,8 +73,10 @@
                                 <span class="badge bg-success">Live</span>
                             {% elif drive.status == 'Pending' %}
                                 <span class="badge bg-warning text-dark">Awaiting Approval</span>
+                            {% elif drive.status == 'Stopped'%}
+                                <span class="badge bg-secondary">Closed/Paused</span>
                             {% else %}
-                                <span class="badge bg-secondary">{{ drive.status }}</span>
+                                <span class="badge bg-danger">{{ drive.status }}</span>
                             {% endif %}
                         </td>
                         <td class="text-center">
@@ -79,9 +85,25 @@
                             </span>
                         </td>
                         <td class="text-end pe-3">
-                            <a href="{{ url_for('view_applicants', drive_id=drive.id) }}" class="btn btn-sm btn-outline-primary">
-                                View Applicants
-                            </a>
+                            <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ url_for('view_applicants', drive_id=drive.id) }}" class="btn btn-sm btn-outline-primary">Applicants</a>
+                            
+                            <a href="{{ url_for('edit_drive', drive_id=drive.id) }}" class="btn btn-sm btn-outline-dark">Edit</a>
+
+                            {% if drive.status == 'Approved' %}
+                                <form action="{{ url_for('company_stop_drive', drive_id=drive.id) }}" method="POST" class="m-0">
+                                    <button type="submit" class="btn btn-sm btn-warning">Close</button>
+                                </form>
+                            {% elif drive.status == 'Stopped' %}
+                                <form action="{{ url_for('company_resume_drive', drive_id=drive.id) }}" method="POST" class="m-0">
+                                    <button type="submit" class="btn btn-sm btn-success text-white">Resume</button>
+                                </form>
+                            {% endif %}
+
+                            <form action="{{ url_for('delete_drive', drive_id=drive.id) }}" method="POST" class="m-0">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            </form>
+                        </div>
                         </td>
                     </tr>
                     {% else %}
