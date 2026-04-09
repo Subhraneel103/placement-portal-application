@@ -536,6 +536,7 @@ def edit_profile():
         file=request.files.get('resume')
         if file and allowed_file(file.filename):
             file_path=os.path.join(Upload_Folder,file.filename)
+            web_path = file_path.replace("\\", "/")
             file.save(file_path)
             student.resume_path=file_path
         

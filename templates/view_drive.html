@@ -16,8 +16,11 @@
                     </div>
                     <div class="col-md-6 text-md-end">
                         <h6 class="text-success"><strong>Min CGPA:</strong> {{ drive.eligibility_CGPA }}</h6>
-                        <h6><strong>Allowed Branches:</strong> {{ drive.allowed_branches }}</h6>
+                        <h6><strong>Allowed Branches:</strong> {{ drive.allowed_branches if drive.allowed_branches else 'All Branches' }}</h6>
+                        <h6><strong>Allowed Years:</strong> {{ drive.allowed_years if drive.allowed_years else 'Not Specific'}}</h6>
+                        
                     </div>
+
                 </div>
 
                 <hr>
